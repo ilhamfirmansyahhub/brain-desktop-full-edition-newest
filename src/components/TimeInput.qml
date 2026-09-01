@@ -1,4 +1,5 @@
 import QtQuick
+import "../theme"
 
 // TimeInput — reusable HH:MM input
 // Props : hours (int, readonly), minutes (int, readonly), minuteStep (int, default 1)
@@ -36,62 +37,122 @@ Item {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "HH"; font.pixelSize: 9; font.weight: Font.Medium
-                font.family: "JetBrains Mono"
+                text: "HH"
+                font.pixelSize: 9
+                font.weight: Font.Medium
+                font.family: Theme.monoFontFamily
                 color: Qt.rgba(1,1,1,0.3)
             }
 
             Rectangle {
-                width: parent.width; height: 22; radius: 6
-                color: hUpH.hovered ? Qt.rgba(1,1,1,0.08) : Qt.rgba(1,1,1,0.04)
-                border.color: Qt.rgba(1,1,1,0.08); border.width: 1
-                Behavior on color { ColorAnimation { duration: 80 } }
-                Text { anchors.centerIn: parent; text: "▲"; font.pixelSize: 9; color: Qt.rgba(1,1,1,0.4) }
-                HoverHandler { id: hUpH; cursorShape: Qt.PointingHandCursor }
-                MouseArea { anchors.fill: parent; onClicked: root.incH() }
+                width: parent.width
+                height: 22
+                radius: 6
+                color: hUpH.hovered
+                       ? Qt.rgba(1,1,1,0.08)
+                       : Qt.rgba(1,1,1,0.04)
+                border.color: Qt.rgba(1,1,1,0.08)
+                border.width: 1
+
+                Behavior on color {
+                    ColorAnimation { duration: 80 }
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "▲"
+                    font.pixelSize: 9
+                    color: Qt.rgba(1,1,1,0.4)
+                }
+
+                HoverHandler {
+                    id: hUpH
+                    cursorShape: Qt.PointingHandCursor
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.incH()
+                }
             }
 
             Item {
-                width: parent.width; height: 30
+                width: parent.width
+                height: 30
 
                 Text {
                     anchors.centerIn: parent
                     text: root.zp(root.hVal)
-                    font.pixelSize: 20; font.weight: Font.Bold
-                    font.family: "JetBrains Mono"
+                    font.pixelSize: 20
+                    font.weight: Font.Bold
+                    font.family: Theme.monoFontFamily
                     color: Qt.rgba(235/255, 240/255, 255/255, 0.9)
                 }
 
                 WheelHandler {
-                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                    acceptedDevices:
+                        PointerDevice.Mouse |
+                        PointerDevice.TouchPad
+
                     onWheel: function(ev) {
                         ev.accepted = true
-                        if (ev.angleDelta.y > 0) root.incH()
-                        else                     root.decH()
+
+                        if (ev.angleDelta.y > 0)
+                            root.incH()
+                        else
+                            root.decH()
                     }
                 }
             }
 
             Rectangle {
-                width: parent.width; height: 22; radius: 6
-                color: hDnH.hovered ? Qt.rgba(1,1,1,0.08) : Qt.rgba(1,1,1,0.04)
-                border.color: Qt.rgba(1,1,1,0.08); border.width: 1
-                Behavior on color { ColorAnimation { duration: 80 } }
-                Text { anchors.centerIn: parent; text: "▼"; font.pixelSize: 9; color: Qt.rgba(1,1,1,0.4) }
-                HoverHandler { id: hDnH; cursorShape: Qt.PointingHandCursor }
-                MouseArea { anchors.fill: parent; onClicked: root.decH() }
+                width: parent.width
+                height: 22
+                radius: 6
+                color: hDnH.hovered
+                       ? Qt.rgba(1,1,1,0.08)
+                       : Qt.rgba(1,1,1,0.04)
+                border.color: Qt.rgba(1,1,1,0.08)
+                border.width: 1
+
+                Behavior on color {
+                    ColorAnimation { duration: 80 }
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "▼"
+                    font.pixelSize: 9
+                    color: Qt.rgba(1,1,1,0.4)
+                }
+
+                HoverHandler {
+                    id: hDnH
+                    cursorShape: Qt.PointingHandCursor
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.decH()
+                }
             }
         }
 
-        // Colon
+
+        // ══ COLON ═════════════════════════════════════════════════════════════
         Text {
             anchors.verticalCenter: parent.verticalCenter
             anchors.verticalCenterOffset: 8
+
             text: ":"
-            font.pixelSize: 22; font.weight: Font.Bold
-            font.family: "JetBrains Mono"
+
+            font.pixelSize: 22
+            font.weight: Font.Bold
+            font.family: Theme.monoFontFamily
+
             color: Qt.rgba(1,1,1,0.3)
         }
+
 
         // ══ MINUTES ═══════════════════════════════════════════════════════════
         Column {
@@ -100,50 +161,117 @@ Item {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "MM"; font.pixelSize: 9; font.weight: Font.Medium
-                font.family: "JetBrains Mono"
+                text: "MM"
+
+                font.pixelSize: 9
+                font.weight: Font.Medium
+                font.family: Theme.monoFontFamily
+
                 color: Qt.rgba(1,1,1,0.3)
             }
 
             Rectangle {
-                width: parent.width; height: 22; radius: 6
-                color: mUpH.hovered ? Qt.rgba(1,1,1,0.08) : Qt.rgba(1,1,1,0.04)
-                border.color: Qt.rgba(1,1,1,0.08); border.width: 1
-                Behavior on color { ColorAnimation { duration: 80 } }
-                Text { anchors.centerIn: parent; text: "▲"; font.pixelSize: 9; color: Qt.rgba(1,1,1,0.4) }
-                HoverHandler { id: mUpH; cursorShape: Qt.PointingHandCursor }
-                MouseArea { anchors.fill: parent; onClicked: root.incM() }
+                width: parent.width
+                height: 22
+                radius: 6
+
+                color: mUpH.hovered
+                       ? Qt.rgba(1,1,1,0.08)
+                       : Qt.rgba(1,1,1,0.04)
+
+                border.color: Qt.rgba(1,1,1,0.08)
+                border.width: 1
+
+                Behavior on color {
+                    ColorAnimation { duration: 80 }
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "▲"
+                    font.pixelSize: 9
+                    color: Qt.rgba(1,1,1,0.4)
+                }
+
+                HoverHandler {
+                    id: mUpH
+                    cursorShape: Qt.PointingHandCursor
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.incM()
+                }
             }
 
             Item {
-                width: parent.width; height: 30
+                width: parent.width
+                height: 30
 
                 Text {
                     anchors.centerIn: parent
                     text: root.zp(root.mVal)
-                    font.pixelSize: 20; font.weight: Font.Bold
-                    font.family: "JetBrains Mono"
-                    color: Qt.rgba(235/255, 240/255, 255/255, 0.9)
+
+                    font.pixelSize: 20
+                    font.weight: Font.Bold
+                    font.family: Theme.monoFontFamily
+
+                    color: Qt.rgba(
+                        235/255,
+                        240/255,
+                        255/255,
+                        0.9
+                    )
                 }
 
                 WheelHandler {
-                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                    acceptedDevices:
+                        PointerDevice.Mouse |
+                        PointerDevice.TouchPad
+
                     onWheel: function(ev) {
                         ev.accepted = true
-                        if (ev.angleDelta.y > 0) root.incM()
-                        else                     root.decM()
+
+                        if (ev.angleDelta.y > 0)
+                            root.incM()
+                        else
+                            root.decM()
                     }
                 }
             }
 
             Rectangle {
-                width: parent.width; height: 22; radius: 6
-                color: mDnH.hovered ? Qt.rgba(1,1,1,0.08) : Qt.rgba(1,1,1,0.04)
-                border.color: Qt.rgba(1,1,1,0.08); border.width: 1
-                Behavior on color { ColorAnimation { duration: 80 } }
-                Text { anchors.centerIn: parent; text: "▼"; font.pixelSize: 9; color: Qt.rgba(1,1,1,0.4) }
-                HoverHandler { id: mDnH; cursorShape: Qt.PointingHandCursor }
-                MouseArea { anchors.fill: parent; onClicked: root.decM() }
+                width: parent.width
+                height: 22
+                radius: 6
+
+                color: mDnH.hovered
+                       ? Qt.rgba(1,1,1,0.08)
+                       : Qt.rgba(1,1,1,0.04)
+
+                border.color: Qt.rgba(1,1,1,0.08)
+                border.width: 1
+
+                Behavior on color {
+                    ColorAnimation { duration: 80 }
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "▼"
+                    font.pixelSize: 9
+                    color: Qt.rgba(1,1,1,0.4)
+                }
+
+                HoverHandler {
+                    id: mDnH
+                    cursorShape: Qt.PointingHandCursor
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.decM()
+                }
             }
         }
     }

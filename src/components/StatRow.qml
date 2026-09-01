@@ -8,25 +8,33 @@ import "../"
 Item {
     id: root
 
-    property string label:      ""
-    property string value:      ""
-    property color  valueColor: Theme.text
+    property string label: ""
+    property string value: ""
+    property color valueColor: Theme.text
 
     implicitHeight: 20
 
     Text {
-        anchors.left:           parent.left
+        anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        text:           root.label
+
+        text: root.label
+
+        font.family: Theme.fontFamily
         font.pixelSize: 11
-        color:          Qt.rgba(1, 1, 1, 0.4)
+
+        color: Qt.rgba(1, 1, 1, 0.4)
     }
 
     Text {
-        anchors.right:          parent.right
+        anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        text:           root.value
+
+        text: root.value
+
+        font.family: Theme.fontFamily
         font.pixelSize: 11
-        color:          root.valueColor
+
+        color: root.valueColor
     }
 }

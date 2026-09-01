@@ -34,6 +34,7 @@ Rectangle {
             Text {
                 id: titleLabel
                 color: Theme.text
+                font.family: Theme.fontFamily
                 font.pixelSize: 14
                 font.bold: true
             }
@@ -41,6 +42,7 @@ Rectangle {
             Text {
                 id: subtitleLabel
                 color: Theme.subtext
+                font.family: Theme.fontFamily
                 font.pixelSize: 11
             }
         }

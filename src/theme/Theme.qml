@@ -2,6 +2,7 @@ pragma Singleton
 
 import QtQuick
 import "."
+import "../services"
 
 QtObject {
     // Colors
@@ -103,5 +104,10 @@ QtObject {
     property int wsPadding: Metrics.wsPadding
     property int wsRadius: ThemeManager.wsRadius
 
-    property int animDuration: Metrics.animDuration
+    property int animDuration: Metrics.animDuration 
+
+    // Fonts
+    property string fontFamily: SettingsService.interfaceFont
+    property string monoFontFamily: SettingsService.monospaceFont
+    property int fontSize: SettingsService.fontSize
 }

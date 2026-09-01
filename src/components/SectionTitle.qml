@@ -2,7 +2,6 @@ import QtQuick
 import "../theme"
 
 Item {
-
     id: root
 
     property alias text: title.text
@@ -11,7 +10,6 @@ Item {
     height: 34
 
     Text {
-
         id: title
 
         anchors.left: parent.left
@@ -21,9 +19,8 @@ Item {
 
         color: Theme.text
 
+        font.family: Theme.fontFamily
         font.pixelSize: 18
         font.bold: true
-
     }
-
 }

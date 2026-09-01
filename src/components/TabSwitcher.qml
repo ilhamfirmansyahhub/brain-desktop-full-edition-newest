@@ -17,215 +17,368 @@ import "../"
 //   Vertical   — parent MUST set height. implicitWidth  is 40.
 
 Item {
-	id: root
+    id: root
 
-	property var    model:       []
-	property string currentPage: ""
-	property string orientation: "horizontal"   // "horizontal" | "vertical"
+    property var model: []
+    property string currentPage: ""
+    property string orientation: "horizontal"   // "horizontal" | "vertical"
 
-	signal pageChanged(string key)
+    signal pageChanged(string key)
 
-	// ── Default page & reset ──────────────────────────────────────────────────
-	// defaultPage auto-resolves to the first model entry.
-	// Call reset() from the popup's close handler to restore it off-screen.
-	property string defaultPage: model.length > 0 ? model[0].key : ""
+    // ── Default page & reset ──────────────────────────────────────────────────
+    // defaultPage auto-resolves to the first model entry.
+    // Call reset() from the popup's close handler to restore it off-screen.
+    property string defaultPage: model.length > 0 ? model[0].key : ""
 
-	function reset() {
-		pageChanged(defaultPage)
-	}
+    function reset() {
+        pageChanged(defaultPage)
+    }
 
-	implicitWidth:  orientation === "vertical"   ? 40 : 0
-	implicitHeight: orientation === "horizontal" ? 40 : 0
+    implicitWidth: orientation === "vertical" ? 40 : 0
+    implicitHeight: orientation === "horizontal" ? 40 : 0
 
-	// ── Scroll cooldown ───────────────────────────────────────────────────────
-	property bool scrollBusy: false
+    // ── Scroll cooldown ───────────────────────────────────────────────────────
+    property bool scrollBusy: false
 
-	Timer {
-		id: scrollCooldown
-		interval: 300
-		repeat:   false
-		onTriggered: root.scrollBusy = false
-	}
+    Timer {
+        id: scrollCooldown
+        interval: 300
+        repeat: false
 
-	WheelHandler {
-		acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-		onWheel: function(event) {
-			if (root.scrollBusy) return
-			root.scrollBusy = true
-			scrollCooldown.restart()
-			var keys = root.model.map(function(m) { return m.key })
-			var idx  = keys.indexOf(root.currentPage)
-			if (event.angleDelta.y < 0)
-			idx = (idx + 1) % keys.length
-			else
-			idx = (idx - 1 + keys.length) % keys.length
-			root.pageChanged(keys[idx])
-		}
-	}
+        onTriggered: root.scrollBusy = false
+    }
 
-	// ── HORIZONTAL layout — Row ───────────────────────────────────────────────
-	Row {
-		id: hRow
-		anchors.fill: parent
-		visible: root.orientation === "horizontal"
+    WheelHandler {
+        acceptedDevices:
+            PointerDevice.Mouse |
+            PointerDevice.TouchPad
 
-		Repeater {
-			model: root.orientation === "horizontal" ? root.model : []
+        onWheel: function(event) {
+            if (root.scrollBusy)
+                return
 
-			delegate: Item {
-				id: hTab
-				readonly property bool isActive: root.currentPage === modelData.key
+            root.scrollBusy = true
+            scrollCooldown.restart()
 
-				width:  hRow.width / root.model.length
-				height: hRow.height
+            var keys = root.model.map(function(m) {
+                return m.key
+            })
 
-				// Pill background
-				Rectangle {
-					id: hBg
-					anchors.centerIn: parent
-					width:  hIcon.implicitWidth + hLabel.implicitWidth + 24
-					height: parent.height - 8
-					radius: height / 2
+            var idx = keys.indexOf(root.currentPage)
 
-					color: hTab.isActive
-					? Qt.rgba(Theme.active.r, Theme.active.g, Theme.active.b, 0.18)
-					: (hHov.hovered ? Qt.rgba(1, 1, 1, 0.07) : "transparent")
+            if (event.angleDelta.y < 0)
+                idx = (idx + 1) % keys.length
+            else
+                idx = (idx - 1 + keys.length) % keys.length
 
-					Behavior on color { ColorAnimation { duration: 120 } }
-				}
+            root.pageChanged(keys[idx])
+        }
+    }
 
-				// Icon + label
-				Row {
-					anchors.centerIn: parent
-					spacing: 6
+    // ── HORIZONTAL layout — Row ───────────────────────────────────────────────
+    Row {
+        id: hRow
 
-					Text {
-						id: hIcon
-						text:           modelData.icon
-						font.pixelSize: 14
-						anchors.verticalCenter: parent.verticalCenter
-						color: hTab.isActive
-						? Theme.active
-						: (hHov.hovered ? Qt.rgba(1, 1, 1, 0.75) : Qt.rgba(1, 1, 1, 0.4))
-						Behavior on color { ColorAnimation { duration: 120 } }
-					}
+        anchors.fill: parent
+        visible: root.orientation === "horizontal"
 
-					Text {
-						id: hLabel
-						visible:        modelData.label !== undefined
-						text:           modelData.label ?? ""
-						font.pixelSize: 12
-						font.weight:    hTab.isActive ? Font.Medium : Font.Normal
-						anchors.verticalCenter: parent.verticalCenter
-						color: hTab.isActive
-						? Theme.active
-						: (hHov.hovered ? Qt.rgba(1, 1, 1, 0.75) : Qt.rgba(1, 1, 1, 0.4))
-						Behavior on color { ColorAnimation { duration: 120 } }
-					}
-				}
+        Repeater {
+            model: root.orientation === "horizontal"
+                ? root.model
+                : []
 
-				HoverHandler { id: hHov; cursorShape: Qt.PointingHandCursor }
-				MouseArea {
-					anchors.fill: parent
-					onClicked:    root.pageChanged(modelData.key)
-				}
-			}
-		}
-	}
+            delegate: Item {
+                id: hTab
 
-	// Bottom divider — horizontal only
-	Rectangle {
-		visible:        root.orientation === "horizontal"
-		anchors.bottom: parent.bottom
-		anchors.left:   parent.left
-		anchors.right:  parent.right
-		height:         1
-		color:          Qt.rgba(1, 1, 1, 0.07)
-	}
+                readonly property bool isActive:
+                    root.currentPage === modelData.key
 
-	// ── VERTICAL layout — Column ──────────────────────────────────────────────
-	    Column {
-	        id: vCol
-	        anchors.centerIn: parent
-	        visible: root.orientation === "vertical"
-	        width:   root.width
-	
-	        readonly property int tabH: 60
-	        spacing: root.model.length > 1
-	            ? (root.height - root.model.length * tabH) / (root.model.length - 1)
-	            : 0
-	
-	        readonly property bool hasLabels:
-	            root.model.length > 0 &&
-	            root.model[0].label !== undefined &&
-	            root.model[0].label !== ""
-	
-	        Repeater {
-	            model: root.orientation === "vertical" ? root.model : []
-	
-	            delegate: Rectangle {
-	                id: vTab
-	                readonly property bool isActive: root.currentPage === modelData.key
-	
-	                width:  vCol.width
-	                height: vCol.tabH
-	                radius: Theme.cornerRadius * 2
-	
-	                color: vTab.isActive
-	                    ? Theme.active
-	                    : (vHov.hovered ? Qt.rgba(1, 1, 1, 0.08) : "transparent")
-	
-	                Behavior on color { ColorAnimation { duration: 120 } }
-	
-	                // Icon-only (no label)
-	                Text {
-	                    visible:          !vCol.hasLabels
-	                    anchors.centerIn: parent
-	                    text:             modelData.icon
-	                    font.pixelSize:   16
-	                    color: vTab.isActive ? Theme.background : Theme.text
-	                    Behavior on color { ColorAnimation { duration: 120 } }
-	                }
-	
-	                // Icon + label row
-	                Row {
-	                    visible: vCol.hasLabels
-	                    anchors {
-	                        left:           parent.left
-	                        leftMargin:     16
-	                        verticalCenter: parent.verticalCenter
-	                    }
-	                    spacing: 12
-	
-	                    Text {
-	                        text:           modelData.icon
-	                        font.pixelSize: 15
-	                        anchors.verticalCenter: parent.verticalCenter
-	                        color: vTab.isActive
-	                            ? Theme.background
-	                            : (vHov.hovered ? Qt.rgba(1, 1, 1, 0.80) : Qt.rgba(1, 1, 1, 0.42))
-	                        Behavior on color { ColorAnimation { duration: 120 } }
-	                    }
-	
-	                    Text {
-	                        text:           modelData.label ?? ""
-	                        font.pixelSize: 12
-	                        font.weight:    vTab.isActive ? Font.Medium : Font.Normal
-	                        anchors.verticalCenter: parent.verticalCenter
-	                        color: vTab.isActive
-	                            ? Theme.background
-	                            : (vHov.hovered ? Qt.rgba(1, 1, 1, 0.80) : Qt.rgba(1, 1, 1, 0.42))
-	                        Behavior on color { ColorAnimation { duration: 120 } }
-	                    }
-	                }
-	
-	                HoverHandler { id: vHov; cursorShape: Qt.PointingHandCursor }
-	                MouseArea {
-	                    anchors.fill: parent
-	                    onClicked:    root.pageChanged(modelData.key)
-	                }
-	            }
-	        }
-	    }
-	}
+                width: hRow.width / root.model.length
+                height: hRow.height
 
+                // Pill background
+                Rectangle {
+                    id: hBg
+
+                    anchors.centerIn: parent
+
+                    width:
+                        hIcon.implicitWidth +
+                        hLabel.implicitWidth +
+                        24
+
+                    height: parent.height - 8
+                    radius: height / 2
+
+                    color: hTab.isActive
+                        ? Qt.rgba(
+                            Theme.active.r,
+                            Theme.active.g,
+                            Theme.active.b,
+                            0.18
+                        )
+                        : (
+                            hHov.hovered
+                            ? Qt.rgba(1, 1, 1, 0.07)
+                            : "transparent"
+                        )
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 120
+                        }
+                    }
+                }
+
+                // Icon + label
+                Row {
+                    anchors.centerIn: parent
+
+                    spacing: 6
+
+                    Text {
+                        id: hIcon
+
+                        text: modelData.icon
+
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 14
+
+                        anchors.verticalCenter:
+                            parent.verticalCenter
+
+                        color: hTab.isActive
+                            ? Theme.active
+                            : (
+                                hHov.hovered
+                                ? Qt.rgba(1, 1, 1, 0.75)
+                                : Qt.rgba(1, 1, 1, 0.4)
+                            )
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 120
+                            }
+                        }
+                    }
+
+                    Text {
+                        id: hLabel
+
+                        visible: modelData.label !== undefined
+                        text: modelData.label ?? ""
+
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.weight:
+                            hTab.isActive
+                            ? Font.Medium
+                            : Font.Normal
+
+                        anchors.verticalCenter:
+                            parent.verticalCenter
+
+                        color: hTab.isActive
+                            ? Theme.active
+                            : (
+                                hHov.hovered
+                                ? Qt.rgba(1, 1, 1, 0.75)
+                                : Qt.rgba(1, 1, 1, 0.4)
+                            )
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 120
+                            }
+                        }
+                    }
+                }
+
+                HoverHandler {
+                    id: hHov
+                    cursorShape: Qt.PointingHandCursor
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    onClicked:
+                        root.pageChanged(modelData.key)
+                }
+            }
+        }
+    }
+
+    // Bottom divider — horizontal only
+    Rectangle {
+        visible: root.orientation === "horizontal"
+
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        height: 1
+
+        color: Qt.rgba(1, 1, 1, 0.07)
+    }
+
+    // ── VERTICAL layout — Column ──────────────────────────────────────────────
+    Column {
+        id: vCol
+
+        anchors.centerIn: parent
+
+        visible: root.orientation === "vertical"
+
+        width: root.width
+
+        readonly property int tabH: 60
+
+        spacing:
+            root.model.length > 1
+            ? (
+                (root.height - root.model.length * tabH) /
+                (root.model.length - 1)
+            )
+            : 0
+
+        readonly property bool hasLabels:
+            root.model.length > 0 &&
+            root.model[0].label !== undefined &&
+            root.model[0].label !== ""
+
+        Repeater {
+            model: root.orientation === "vertical"
+                ? root.model
+                : []
+
+            delegate: Rectangle {
+                id: vTab
+
+                readonly property bool isActive:
+                    root.currentPage === modelData.key
+
+                width: vCol.width
+                height: vCol.tabH
+
+                radius: Theme.cornerRadius * 2
+
+                color: vTab.isActive
+                    ? Theme.active
+                    : (
+                        vHov.hovered
+                        ? Qt.rgba(1, 1, 1, 0.08)
+                        : "transparent"
+                    )
+
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 120
+                    }
+                }
+
+                // Icon-only
+                Text {
+                    visible: !vCol.hasLabels
+
+                    anchors.centerIn: parent
+
+                    text: modelData.icon
+
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 16
+
+                    color:
+                        vTab.isActive
+                        ? Theme.background
+                        : Theme.text
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 120
+                        }
+                    }
+                }
+
+                // Icon + label row
+                Row {
+                    visible: vCol.hasLabels
+
+                    anchors {
+                        left: parent.left
+                        leftMargin: 16
+                        verticalCenter: parent.verticalCenter
+                    }
+
+                    spacing: 12
+
+                    Text {
+                        text: modelData.icon
+
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 15
+
+                        anchors.verticalCenter:
+                            parent.verticalCenter
+
+                        color:
+                            vTab.isActive
+                            ? Theme.background
+                            : (
+                                vHov.hovered
+                                ? Qt.rgba(1, 1, 1, 0.80)
+                                : Qt.rgba(1, 1, 1, 0.42)
+                            )
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 120
+                            }
+                        }
+                    }
+
+                    Text {
+                        text: modelData.label ?? ""
+
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.weight:
+                            vTab.isActive
+                            ? Font.Medium
+                            : Font.Normal
+
+                        anchors.verticalCenter:
+                            parent.verticalCenter
+
+                        color:
+                            vTab.isActive
+                            ? Theme.background
+                            : (
+                                vHov.hovered
+                                ? Qt.rgba(1, 1, 1, 0.80)
+                                : Qt.rgba(1, 1, 1, 0.42)
+                            )
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 120
+                            }
+                        }
+                    }
+                }
+
+                HoverHandler {
+                    id: vHov
+                    cursorShape: Qt.PointingHandCursor
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    onClicked:
+                        root.pageChanged(modelData.key)
+                }
+            }
+        }
+    }
+}

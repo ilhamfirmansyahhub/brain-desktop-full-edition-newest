@@ -626,7 +626,7 @@ StatCard {
             Text {
                 anchors { right: parent.right; top: parent.top }
                 text: Math.round(root._brightVal * 100) + "%"
-                font.pixelSize: 9; font.family: "JetBrains Mono"; font.weight: Font.Bold
+                font.pixelSize: 9; font.family: Theme.monoFontFamily; font.weight: Font.Bold
                 color: Qt.rgba(Theme.active.r, Theme.active.g, Theme.active.b, 0.7)
             }
 
@@ -761,7 +761,7 @@ StatCard {
                         Text {
                             visible: btn.sublabel !== ""
                             text:    btn.sublabel
-                            font.pixelSize: 8; font.family: "JetBrains Mono"
+                            font.pixelSize: 8; font.family: Theme.monoFontFamily
                             color: Qt.rgba(Theme.active.r, Theme.active.g, Theme.active.b, 0.65)
                             width: btn.width - 18; elide: Text.ElideRight
                         }

@@ -2,7 +2,6 @@ import QtQuick
 import "../theme"
 
 Rectangle {
-
     id: root
 
     property alias text: label.text
@@ -40,6 +39,7 @@ Rectangle {
 
         color: Theme.text
 
+        font.family: Theme.fontFamily
         font.pixelSize: 13
         font.weight: Font.Medium
     }
@@ -53,5 +53,4 @@ Rectangle {
 
         onClicked: root.clicked()
     }
-
 }
