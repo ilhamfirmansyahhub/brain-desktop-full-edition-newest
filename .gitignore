@@ -1,3 +1,18 @@
-src.backup-before-white-text/
+# Local backups / temporary files
 *.bak
 *.bak-*
+*.backup
+*.before-*
+*.vanilla
+
+# Editor / OS junk
+*~
+.DS_Store
+
+# Local runtime/config data
+.cache/
+.cache-*/
+src.backup-before-white-text/
+
+# Generated user configuration
+configs/Brain_Shell/src/user_data/
